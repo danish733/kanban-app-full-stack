@@ -8,31 +8,31 @@ userRouter.get("/",(req,res)=>{
     res.send("this is user get route")
 })
 
-userRouter.post("/register",async(req,res)=>{
-    const {name,email,password,role} = req.body
-    const existingUser = await UserModel.findOne({email})
-    try {
-        if(existingUser){
-            return res.status(404).json({message:"Email already exist"})
-        }
-        bcrypt.hash(password,3,async(err,hash)=>{
-            if(err){
-               return res.status(404).json({message:"Error in hashing password "})
-            }
-            const registerUser = new UserModel({
-                name,
-                email,
-                password:hash,
-                role
-            })
-            await registerUser.save()
-            res.status(201).json({message:"User regsiter Success"})
-        })
+userRouter.post("/register", async (req, res) => {
+    const { name, email, password, role } = req.body;
 
+    try {
+        const existingUser = await UserModel.findOne({ email });
+
+        if (existingUser) {
+            return res.status(400).json({ message: "Email already exists" });
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const registerUser = new UserModel({
+            name,
+            email,
+            password: hashedPassword,
+            role,
+        });
+
+        await registerUser.save();
+        res.status(201).json({ message: "User registered successfully" });
     } catch (error) {
-        res.status(404).json({message:"Server Error while Registering"})
+        res.status(500).json({ message: "Server error while registering" });
     }
-})
+});
 
 userRouter.post("/login",async(req,res)=>{
     const {email,password} = req.body
