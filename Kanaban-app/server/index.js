@@ -4,6 +4,7 @@ dotenv.config()
 import connection from "./config/db.js"
 import userRouter from "./routes/user.route.js"
 import kanbanRoutes from "./routes/kanban.route.js"
+import cors from "cors"
 
 const PORT = process.env.PORT || 3000
 const app = express()
